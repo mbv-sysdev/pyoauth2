@@ -2,7 +2,7 @@ from distutils.core import setup
 
 setup(
     name='pyoauth2',
-    version='0.0.1',
+    version='1.0',
     author='GraphEffect, Inc.',
     author_email='nate@grapheffect.com',
     packages=['pyoauth2', 'pyoauth2.tests'],
