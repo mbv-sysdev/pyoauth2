@@ -1,11 +1,6 @@
 import json
 import logging
-from requests import Response
-from cStringIO import StringIO
-try:
-    from werkzeug.exceptions import Unauthorized
-except ImportError:
-    Unauthorized = Exception
+from webob import Response
 from . import utils
 
 
@@ -33,10 +28,11 @@ class Provider(object):
         :rtype: requests.Response
         """
         res = Response()
-        res.status_code = status_code
+        res.status = status_code
         if headers is not None:
-            res.headers.update(headers)
-        res.raw = StringIO(body)
+            for k in headers:
+                res.headers[k] = headers[k]
+        res.body = str(body)
         return res
 
     def _make_redirect_error_response(self, redirect_uri, err):
@@ -460,7 +456,7 @@ class AuthorizationProvider(Provider):
             for x in ['grant_type', 'client_id', 'client_secret']:
                 if not data.get(x):
                     raise TypeError("Missing required OAuth 2.0 POST param: {0}".format(x))
-            
+
             # Handle get token from refresh_token
             if 'refresh_token' in data:
                 return self.refresh_token(**data)
@@ -468,7 +464,7 @@ class AuthorizationProvider(Provider):
             # Handle get token from authorization code
             for x in ['redirect_uri', 'code']:
                 if not data.get(x):
-                    raise TypeError("Missing required OAuth 2.0 POST param: {0}".format(x))            
+                    raise TypeError("Missing required OAuth 2.0 POST param: {0}".format(x))
             return self.get_token(**data)
         except TypeError as exc:
             self._handle_exception(exc)
@@ -528,7 +524,7 @@ class AuthorizationProvider(Provider):
                                   'discard_refresh_token.')
 
 
-class OAuthError(Unauthorized):
+class OAuthError(Exception):
     """OAuth error, including the OAuth error reason."""
     def __init__(self, reason, *args, **kwargs):
         self.reason = reason
