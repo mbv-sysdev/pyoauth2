@@ -1,5 +1,4 @@
 from distutils.core import setup
-# TODO: optimize client for webob
 setup(
     name='pyoauth2',
     version='1.0',
@@ -13,6 +12,5 @@ setup(
     long_description=open('README.txt').read(),
     install_requires=[
         'WebOb',
-        "PyCrypto >= 2.6"
     ]
 )
